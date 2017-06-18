@@ -1,6 +1,6 @@
 # Palmtree Curl
 
-[![License](http://img.shields.io/packagist/l/palmtree/canonical-url-bundle.svg)](LICENSE)
+[![License](http://img.shields.io/packagist/l/palmtree/curl.svg)](LICENSE)
 
 A curl class to make http requests a bit easier.
 
