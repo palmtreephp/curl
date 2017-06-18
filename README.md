@@ -61,6 +61,14 @@ $response = $curl->execute();
 $headers = $response->getHeaders();
 $body = $response->getBody();
 
+if($response->is404()) {
+    // handle 404 error
+}
+
+if($response->isOk()) {
+    // response status code is in the 2xx range
+}
+
 ```
 
 ## License

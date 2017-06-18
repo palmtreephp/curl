@@ -1,15 +1,22 @@
 <?php
 
+require_once __DIR__ . '/../vendor/autoload.php';
+
 use Palmtree\Curl\Curl;
 
-require dirname(__DIR__) . '/vendor/autoload.php';
+$curl = new Curl([
+    'url'       => 'http://example.org',
+    'curl_opts' => [
+        CURLOPT_FOLLOWLOCATION => true,
+    ],
+]);
 
-$curl = new Curl('http://tests.local/curl.php');
+$curl->getRequest()->addHeader('Host', 'example.org');
 
-$curl->post(['hello' => 123, 'test' => 'bye']);
+$response = $curl->execute();
 
-var_dump($curl->getResponse()->getHeaders());
+$headers = $response->getHeaders();
+$body    = $response->getBody();
 
-print($curl->getResponse()->getBody());
-
-//var_dump( Curl::getContents( 'http://tests.local/curl.php' ) );
+var_export($headers);
+echo $body;
