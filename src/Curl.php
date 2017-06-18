@@ -166,4 +166,11 @@ class Curl
 
         return $body;
     }
+
+    public function setOpt($key, $value)
+    {
+        $this->args['curl_opts'][$key] = $value;
+
+        curl_setopt($this->handle, $key, $value);
+    }
 }
