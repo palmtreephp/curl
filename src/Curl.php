@@ -157,4 +157,13 @@ class Curl
 
         return $args;
     }
+
+    public function __toString()
+    {
+        $body = $this->getResponse()->getBody();
+
+        $body = $body ? : '';
+
+        return $body;
+    }
 }
