@@ -20,7 +20,6 @@ class Curl
     public static $defaults = [
         'curl_opts' => [
             CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_HEADER         => true,
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_AUTOREFERER    => true,
             CURLOPT_USERAGENT      => 'Palmtree\Curl',
@@ -41,6 +40,9 @@ class Curl
         $this->args = $this->parseArgs($args);
 
         $this->handle = curl_init($this->getUrl());
+
+        // The Response class always parses headers.
+        $this->args['curl_opts'][CURLOPT_HEADER] = true;
 
         curl_setopt_array($this->handle, $this->args['curl_opts']);
 

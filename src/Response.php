@@ -87,14 +87,23 @@ class Response
      */
     public function parse($response)
     {
-        list($headers, $body) = explode("\r\n\r\n", $response, 2);
+        $response = explode("\r\n\r\n", $response);
 
-        foreach (explode("\r\n", $headers) as $header) {
-            $pair = explode(': ', $header, 2);
+        if (count($response) > 1) {
+            // We want the last two parts
+            $response = array_slice($response, -2, 2);
 
-            if (isset($pair[1])) {
-                $this->headers[$pair[0]] = $pair[1];
+            list($headers, $body) = $response;
+
+            foreach (explode("\r\n", $headers) as $header) {
+                $pair = explode(': ', $header, 2);
+
+                if (isset($pair[1])) {
+                    $this->headers[$pair[0]] = $pair[1];
+                }
             }
+        } else {
+            $body = $response[0];
         }
 
         $this->body = $body;
