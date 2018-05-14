@@ -11,6 +11,7 @@
     }
   ],
   "require": {
+    "php": ">=5.6",
     "palmtree/argparser": "~1.2"
   },
   "autoload": {
