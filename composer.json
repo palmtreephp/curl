@@ -1,22 +1,30 @@
 {
-  "name": "palmtree/curl",
-  "description": "Curl component for Palmtree PHP",
-  "type": "library",
-  "license": "MIT",
-  "authors": [
-    {
-      "name": "Andy Palmer",
-      "email": "andy@andypalmer.me",
-      "homepage": "https://andypalmer.me"
+    "name": "palmtree/curl",
+    "description": "Curl component for Palmtree PHP",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Andy Palmer",
+            "email": "andy@andypalmer.me",
+            "homepage": "https://andypalmer.me"
+        }
+    ],
+    "require": {
+        "php": ">=5.6",
+        "ext-curl": "*",
+        "palmtree/argparser": "~1.2"
+    },
+    "require-dev": {
+        "palmtree/php-cs-fixer-config": "^1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Palmtree\\Curl\\": "src"
+        }
+    },
+    "scripts": {
+        "sniff": "vendor/bin/php-cs-fixer fix -v --dry-run --stop-on-violation --using-cache=no --diff --diff-format=udiff",
+        "fix": "vendor/bin/php-cs-fixer fix --diff"
     }
-  ],
-  "require": {
-    "php": ">=5.6",
-    "palmtree/argparser": "~1.2"
-  },
-  "autoload": {
-    "psr-4": {
-      "Palmtree\\Curl\\": "src"
-    }
-  }
 }
