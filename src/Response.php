@@ -5,11 +5,11 @@ namespace Palmtree\Curl;
 class Response
 {
     /** @var array */
-    protected $headers = [];
+    private $headers = [];
     /** @var string */
-    protected $body;
+    private $body;
     /** @var int */
-    protected $statusCode;
+    private $statusCode;
 
     public function __construct($response = '', $statusCode = 0)
     {
@@ -71,7 +71,7 @@ class Response
     /**
      * @param int $statusCode
      *
-     * @return $this
+     * @return self
      */
     public function setStatusCode($statusCode)
     {
@@ -83,20 +83,20 @@ class Response
     /**
      * @param string $response
      *
-     * @return $this
+     * @return self
      */
     public function parse($response)
     {
-        $response = explode("\r\n\r\n", $response);
+        $response = \explode("\r\n\r\n", $response);
 
-        if (count($response) > 1) {
+        if (\count($response) > 1) {
             // We want the last two parts
-            $response = array_slice($response, -2, 2);
+            $response = \array_slice($response, -2, 2);
 
             list($headers, $body) = $response;
 
-            foreach (explode("\r\n", $headers) as $header) {
-                $pair = explode(': ', $header, 2);
+            foreach (\explode("\r\n", $headers) as $header) {
+                $pair = \explode(': ', $header, 2);
 
                 if (isset($pair[1])) {
                     $this->headers[$pair[0]] = $pair[1];
@@ -115,7 +115,7 @@ class Response
     {
         $body = $this->getBody();
 
-        $body = $body ? : '';
+        $body = $body ?: '';
 
         return $body;
     }

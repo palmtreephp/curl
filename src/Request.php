@@ -4,14 +4,16 @@ namespace Palmtree\Curl;
 
 class Request
 {
-    protected $headers = [];
-    protected $body;
+    /** @var array */
+    private $headers = [];
+    /** @var string|null */
+    private $body;
 
     /**
      * @param string $key
      * @param string $value
      *
-     * @return $this
+     * @return self
      */
     public function addHeader($key, $value)
     {
@@ -21,11 +23,11 @@ class Request
     }
 
     /**
-     * @param mixed $headers
+     * @param array $headers
      *
-     * @return Request
+     * @return self
      */
-    public function setHeaders($headers)
+    public function setHeaders(array $headers)
     {
         $this->headers = $headers;
 
@@ -47,16 +49,16 @@ class Request
     {
         $headers = [];
         foreach ($this->getHeaders() as $key => $value) {
-            $headers[] = sprintf('%s: %s', $key, $value);
+            $headers[] = \sprintf('%s: %s', $key, $value);
         }
 
         return $headers;
     }
 
     /**
-     * @param mixed $body
+     * @param string $body
      *
-     * @return Request
+     * @return self
      */
     public function setBody($body)
     {
@@ -66,7 +68,7 @@ class Request
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getBody()
     {

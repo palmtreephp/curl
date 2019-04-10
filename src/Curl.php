@@ -6,16 +6,14 @@ use Palmtree\ArgParser\ArgParser;
 
 class Curl
 {
-    /**@var string */
-    protected $url;
-    /**@var resource */
-    protected $handle;
-
+    /** @var string */
+    private $url;
+    /** @var resource */
+    private $handle;
     /** @var Request $request */
-    protected $request;
-
-    /** @var  Response $response */
-    protected $response;
+    private $request;
+    /** @var Response $response */
+    private $response;
 
     public static $defaults = [
         'curl_opts' => [
@@ -27,8 +25,8 @@ class Curl
     ];
 
     const HTTP_NOT_FOUND = 404;
-    const HTTP_OK_MIN = 200;
-    const HTTP_OK_MAX = 299;
+    const HTTP_OK_MIN    = 200;
+    const HTTP_OK_MAX    = 299;
 
     /**
      * Curl constructor.
@@ -39,20 +37,21 @@ class Curl
     {
         $this->args = $this->parseArgs($args);
 
-        $this->handle = curl_init($this->getUrl());
+        $this->handle = \curl_init($this->getUrl());
 
         // The Response class always parses headers.
         $this->args['curl_opts'][CURLOPT_HEADER] = true;
 
-        curl_setopt_array($this->handle, $this->args['curl_opts']);
+        \curl_setopt_array($this->handle, $this->args['curl_opts']);
 
         $this->request = new Request();
     }
 
     /**
      * @param string $url
+     * @param array  $curlOpts
      *
-     * @return mixed
+     * @return string
      */
     public static function getContents($url, $curlOpts = [])
     {
@@ -86,18 +85,18 @@ class Curl
         $headers = $this->getRequest()->getHeaderStrings();
 
         if (!empty($headers)) {
-            curl_setopt($this->handle, CURLOPT_HTTPHEADER, $headers);
+            \curl_setopt($this->handle, CURLOPT_HTTPHEADER, $headers);
         }
 
         $body = $this->getRequest()->getBody();
 
         if (!empty($body)) {
-            curl_setopt($this->handle, CURLOPT_POST, true);
-            curl_setopt($this->handle, CURLOPT_POSTFIELDS, $body);
+            \curl_setopt($this->handle, CURLOPT_POST, true);
+            \curl_setopt($this->handle, CURLOPT_POSTFIELDS, $body);
         }
 
-        $response   = curl_exec($this->handle);
-        $statusCode = curl_getinfo($this->handle, CURLINFO_HTTP_CODE);
+        $response   = \curl_exec($this->handle);
+        $statusCode = \curl_getinfo($this->handle, CURLINFO_HTTP_CODE);
 
         $this->response = new Response($response, $statusCode);
 
@@ -155,7 +154,7 @@ class Curl
 
         $parser->parseSetters($this);
 
-        $args = $parser->resolveOptions(static::$defaults);
+        $args = $parser->resolveOptions(self::$defaults);
 
         return $args;
     }
@@ -164,7 +163,7 @@ class Curl
     {
         $body = $this->getResponse()->getBody();
 
-        $body = $body ? : '';
+        $body = $body ?: '';
 
         return $body;
     }
@@ -173,6 +172,6 @@ class Curl
     {
         $this->args['curl_opts'][$key] = $value;
 
-        curl_setopt($this->handle, $key, $value);
+        \curl_setopt($this->handle, $key, $value);
     }
 }
