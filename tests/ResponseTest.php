@@ -62,4 +62,25 @@ class ResponseTest extends TestCase
 
         $this->assertSame('Hello, World!', $response->getBody());
     }
+
+    public function testIsOk()
+    {
+        $response = new Response('', 200);
+
+        $this->assertTrue($response->isOk());
+    }
+
+    public function testIs404()
+    {
+        $response = new Response('', 404);
+
+        $this->assertTrue($response->is404());
+    }
+
+    public function testToString()
+    {
+        $response = new Response('Hello, World!');
+
+        $this->assertSame('Hello, World!', (string)$response);
+    }
 }
