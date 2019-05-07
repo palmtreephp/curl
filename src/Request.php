@@ -49,7 +49,7 @@ class Request
     {
         $headers = [];
         foreach ($this->getHeaders() as $key => $value) {
-            $headers[] = \sprintf('%s: %s', $key, $value);
+            $headers[] = "$key: $value";
         }
 
         return $headers;
