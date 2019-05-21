@@ -37,9 +37,13 @@ $curl = new Curl('http://example.org');
 // Returns the response body when used as a string
 echo $curl;
 
-$headers = $curl->getResponse()->getHeaders();
+$response = $curl->getResponse();
 
-$body = $curl->getResponse()->getBody();
+$headers = $response->getHeaders();
+
+$contentType = $response->getHeader('Content-Type');
+
+$body = $response->getBody();
 ```
 
 ### Advanced Usage
