@@ -9,43 +9,30 @@ class Request
     /** @var string|null */
     private $body;
 
-    /**
-     * @param string $key
-     * @param string $value
-     *
-     * @return self
-     */
-    public function addHeader($key, $value)
+    public function addHeader(string $key, string $value): self
     {
         $this->headers[$key] = $value;
 
         return $this;
     }
 
-    /**
-     * @param array $headers
-     *
-     * @return self
-     */
-    public function setHeaders(array $headers)
+    public function setHeaders(array $headers): self
     {
-        $this->headers = $headers;
+        $this->headers = [];
+
+        foreach ($headers as $key => $value) {
+            $this->addHeader($key, $value);
+        }
 
         return $this;
     }
 
-    /**
-     * @return array
-     */
-    public function getHeaders()
+    public function getHeaders(): array
     {
         return $this->headers;
     }
 
-    /**
-     * @return array
-     */
-    public function getHeaderStrings()
+    public function getHeaderStrings(): array
     {
         $headers = [];
         foreach ($this->getHeaders() as $key => $value) {
@@ -55,22 +42,14 @@ class Request
         return $headers;
     }
 
-    /**
-     * @param string $body
-     *
-     * @return self
-     */
-    public function setBody($body)
+    public function setBody(string $body): self
     {
         $this->body = $body;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getBody()
+    public function getBody(): ?string
     {
         return $this->body;
     }

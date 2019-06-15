@@ -29,8 +29,6 @@ class Curl
     const HTTP_OK_MAX    = 299;
 
     /**
-     * Curl constructor.
-     *
      * @param array|string $args Array of args or URL.
      */
     public function __construct($args = [])
@@ -47,13 +45,7 @@ class Curl
         $this->request = new Request();
     }
 
-    /**
-     * @param string $url
-     * @param array  $curlOpts
-     *
-     * @return string
-     */
-    public static function getContents($url, $curlOpts = [])
+    public static function getContents(string $url, array $curlOpts = []): string
     {
         $args = [
             'url'       => $url,
@@ -67,20 +59,15 @@ class Curl
 
     /**
      * @param array|string $data
-     *
-     * @return Response
      */
-    public function post($data)
+    public function post($data): Response
     {
         $this->getRequest()->setBody($data);
 
         return $this->execute();
     }
 
-    /**
-     * @return Response
-     */
-    public function execute()
+    public function execute(): Response
     {
         $headers = $this->getRequest()->getHeaderStrings();
 
@@ -103,18 +90,12 @@ class Curl
         return $this->response;
     }
 
-    /**
-     * @return Request
-     */
-    public function getRequest()
+    public function getRequest(): Request
     {
         return $this->request;
     }
 
-    /**
-     * @return Response
-     */
-    public function getResponse()
+    public function getResponse(): Response
     {
         if ($this->response === null) {
             $this->execute();
@@ -123,22 +104,14 @@ class Curl
         return $this->response;
     }
 
-    /**
-     * @param string $url
-     *
-     * @return Curl
-     */
-    public function setUrl($url)
+    public function setUrl(string $url): self
     {
         $this->url = $url;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getUrl()
+    public function getUrl(): string
     {
         return $this->url;
     }
@@ -148,7 +121,7 @@ class Curl
      *
      * @return array
      */
-    protected function parseArgs($args)
+    protected function parseArgs($args): array
     {
         $parser = new ArgParser($args, 'url');
 
@@ -159,7 +132,7 @@ class Curl
         return $args;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         $body = $this->getResponse()->getBody();
 
@@ -168,7 +141,7 @@ class Curl
         return $body;
     }
 
-    public function setOpt($key, $value)
+    public function setOpt($key, $value): void
     {
         $this->args['curl_opts'][$key] = $value;
 

@@ -18,74 +18,44 @@ class Response
             ->setStatusCode($statusCode);
     }
 
-    /**
-     * @return array
-     */
-    public function getHeaders()
+    public function getHeaders(): array
     {
         return $this->headers;
     }
 
-    /**
-     * @param string $key
-     *
-     * @return string
-     */
-    public function getHeader($key)
+    public function getHeader(string $key): string
     {
-        return isset($this->headers[$key]) ? $this->headers[$key] : null;
+        return $this->headers[$key] ?? null;
     }
 
-    /**
-     * @return string
-     */
-    public function getBody()
+    public function getBody(): string
     {
         return $this->body;
     }
 
-    /**
-     * @return int
-     */
-    public function getStatusCode()
+    public function getStatusCode(): int
     {
         return $this->statusCode;
     }
 
-    /**
-     * @return bool
-     */
-    public function isOk()
+    public function isOk(): bool
     {
         return $this->getStatusCode() >= Curl::HTTP_OK_MIN && $this->getStatusCode() <= Curl::HTTP_OK_MAX;
     }
 
-    /**
-     * @return bool
-     */
-    public function is404()
+    public function is404(): bool
     {
         return $this->getStatusCode() === Curl::HTTP_NOT_FOUND;
     }
 
-    /**
-     * @param int $statusCode
-     *
-     * @return self
-     */
-    public function setStatusCode($statusCode)
+    public function setStatusCode(int $statusCode): self
     {
         $this->statusCode = $statusCode;
 
         return $this;
     }
 
-    /**
-     * @param string $response
-     *
-     * @return self
-     */
-    public function parse($response)
+    public function parse(string $response): self
     {
         $response = \explode("\r\n\r\n", $response);
 
@@ -111,7 +81,7 @@ class Response
         return $this;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         $body = $this->getBody();
 
