@@ -26,6 +26,5 @@ class RequestTest extends TestCase
         ];
 
         $this->assertEquals($expected, $request->getHeaderStrings());
-
     }
 }

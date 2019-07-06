@@ -6,7 +6,7 @@ class Request
 {
     /** @var array */
     private $headers = [];
-    /** @var string|null */
+    /** @var array|null */
     private $body;
 
     public function addHeader(string $key, string $value): self
@@ -42,14 +42,14 @@ class Request
         return $headers;
     }
 
-    public function setBody(string $body): self
+    public function setBody(array $body): self
     {
         $this->body = $body;
 
         return $this;
     }
 
-    public function getBody(): ?string
+    public function getBody(): ?array
     {
         return $this->body;
     }

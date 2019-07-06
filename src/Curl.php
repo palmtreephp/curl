@@ -2,57 +2,43 @@
 
 namespace Palmtree\Curl;
 
-use Palmtree\ArgParser\ArgParser;
-
 class Curl
 {
+    public static $defaultCurlOpts = [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_AUTOREFERER    => true,
+        CURLOPT_USERAGENT      => 'Palmtree\Curl',
+    ];
+
     /** @var string */
     private $url;
     /** @var resource */
     private $handle;
-    /** @var Request $request */
+    /** @var Request */
     private $request;
-    /** @var Response $response */
+    /** @var Response */
     private $response;
-
-    public static $defaults = [
-        'curl_opts' => [
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_AUTOREFERER    => true,
-            CURLOPT_USERAGENT      => 'Palmtree\Curl',
-        ],
-    ];
+    /** @var array */
+    private $curlOpts = [];
 
     const HTTP_NOT_FOUND = 404;
     const HTTP_OK_MIN    = 200;
     const HTTP_OK_MAX    = 299;
 
-    /**
-     * @param array|string $args Array of args or URL.
-     */
-    public function __construct($args = [])
+    public function __construct(string $url, array $curlOpts = [])
     {
-        $this->args = $this->parseArgs($args);
+        $this->setUrl($url);
 
-        $this->handle = \curl_init($this->getUrl());
-
-        // The Response class always parses headers.
-        $this->args['curl_opts'][CURLOPT_HEADER] = true;
-
-        \curl_setopt_array($this->handle, $this->args['curl_opts']);
-
+        $this->handle  = \curl_init($url);
         $this->request = new Request();
+
+        $this->buildCurlOpts($curlOpts);
     }
 
     public static function getContents(string $url, array $curlOpts = []): string
     {
-        $args = [
-            'url'       => $url,
-            'curl_opts' => $curlOpts,
-        ];
-
-        $curl = new self($args);
+        $curl = new self($url, $curlOpts);
 
         return $curl->getResponse()->getBody();
     }
@@ -69,15 +55,11 @@ class Curl
 
     public function execute(): Response
     {
-        $headers = $this->getRequest()->getHeaderStrings();
-
-        if (!empty($headers)) {
+        if ($headers = $this->getRequest()->getHeaderStrings()) {
             \curl_setopt($this->handle, CURLOPT_HTTPHEADER, $headers);
         }
 
-        $body = $this->getRequest()->getBody();
-
-        if (!empty($body)) {
+        if ($body = $this->getRequest()->getBody()) {
             \curl_setopt($this->handle, CURLOPT_POST, true);
             \curl_setopt($this->handle, CURLOPT_POSTFIELDS, $body);
         }
@@ -116,20 +98,22 @@ class Curl
         return $this->url;
     }
 
-    /**
-     * @param array|string $args
-     *
-     * @return array
-     */
-    protected function parseArgs($args): array
+    public function getOpts(): array
     {
-        $parser = new ArgParser($args, 'url');
+        return $this->curlOpts;
+    }
 
-        $parser->parseSetters($this);
+    public function setOpt(int $key, $value): self
+    {
+        if ($key === CURLOPT_HEADER && !$value) {
+            throw new \InvalidArgumentException();
+        }
 
-        $args = $parser->resolveOptions(self::$defaults);
+        $this->curlOpts[$key] = $value;
 
-        return $args;
+        \curl_setopt($this->handle, $key, $value);
+
+        return $this;
     }
 
     public function __toString(): string
@@ -141,10 +125,13 @@ class Curl
         return $body;
     }
 
-    public function setOpt($key, $value): void
+    private function buildCurlOpts(array $curlOpts)
     {
-        $this->args['curl_opts'][$key] = $value;
+        $this->curlOpts = \array_replace(self::$defaultCurlOpts, $curlOpts);
 
-        \curl_setopt($this->handle, $key, $value);
+        // The Response class always parses headers.
+        $this->curlOpts[CURLOPT_HEADER] = true;
+
+        \curl_setopt_array($this->handle, $this->curlOpts);
     }
 }
