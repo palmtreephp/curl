@@ -2,6 +2,9 @@
 
 namespace Palmtree\Curl;
 
+use Palmtree\Curl\Exception\BadMethodCallException;
+use Palmtree\Curl\Exception\InvalidArgumentException;
+
 class Curl
 {
     public static $defaultCurlOpts = [
@@ -43,10 +46,7 @@ class Curl
         return $curl->getResponse()->getBody();
     }
 
-    /**
-     * @param array|string $data
-     */
-    public function post($data): Response
+    public function post(array $data): Response
     {
         $this->getRequest()->setBody($data);
 
@@ -55,6 +55,10 @@ class Curl
 
     public function execute(): Response
     {
+        if ($this->response instanceof Response) {
+            throw new BadMethodCallException('Request has already been executed');
+        }
+
         if ($headers = $this->getRequest()->getHeaderStrings()) {
             \curl_setopt($this->handle, CURLOPT_HTTPHEADER, $headers);
         }
@@ -106,7 +110,7 @@ class Curl
     public function setOpt(int $key, $value): self
     {
         if ($key === CURLOPT_HEADER && !$value) {
-            throw new \InvalidArgumentException();
+            throw new InvalidArgumentException('CURLOPT_HEADER cannot be set to false');
         }
 
         $this->curlOpts[$key] = $value;

@@ -2,8 +2,9 @@
 
 namespace Palmtree\Curl\Tests;
 
-use InvalidArgumentException;
 use Palmtree\Curl\Curl;
+use Palmtree\Curl\Exception\BadMethodCallException;
+use Palmtree\Curl\Exception\InvalidArgumentException;
 use Palmtree\Curl\Tests\Fixtures\WebServer;
 use PHPUnit\Framework\TestCase;
 
@@ -44,11 +45,10 @@ class CurlTest extends TestCase
 
     public function testPost()
     {
-        $host   = 'localhost';
-        $server = new WebServer($host, __DIR__ . '/fixtures/server');
-        $port   = $server->start();
+        $server = new WebServer('localhost', __DIR__ . '/fixtures/server');
+        $server->start();
 
-        $curl = new Curl("http://$host:$port/post.php");
+        $curl = new Curl($server->getUrl('post.php'));
 
         $response = $curl->post(['foo' => 'bar']);
 
@@ -59,16 +59,26 @@ class CurlTest extends TestCase
 
     public function testGet()
     {
-        $host   = 'localhost';
-        $server = new WebServer($host, __DIR__ . '/fixtures/server');
-        $port   = $server->start();
+        $server = new WebServer('localhost', __DIR__ . '/fixtures/server');
+        $server->start();
 
-        $curl = new Curl("http://$host:$port/get.php");
+        $curl = new Curl($server->getUrl('get.php'));
 
         $response = $curl->getResponse();
 
         $this->assertSame('foo', $response->getBody());
 
         $server->end();
+    }
+
+    public function testCannotExecuteMoreThanOnce()
+    {
+        $this->expectException(BadMethodCallException::class);
+        $server = new WebServer('localhost', __DIR__ . '/fixtures/server');
+
+        $curl = new Curl($server->getUrl());
+
+        $curl->execute();
+        $curl->execute();
     }
 }

@@ -4,18 +4,24 @@ namespace Palmtree\Curl\Tests\Fixtures;
 
 class WebServer
 {
+    /** @var string */
     private $host;
+    /** @var string */
     private $documentRoot;
+    /** @var int */
     private $pid;
+    /** @var int */
     private $port;
 
-    public function __construct($host, $documentRoot)
+    private const SERVER_TIMEOUT_SECONDS = 5;
+
+    public function __construct(string $host, string $documentRoot)
     {
         $this->host         = $host;
         $this->documentRoot = $documentRoot;
     }
 
-    private function findFreePort()
+    private function findFreePort(): int
     {
         $sock = \socket_create_listen(0);
         \socket_getsockname($sock, $addr, $port);
@@ -24,10 +30,10 @@ class WebServer
         return $port;
     }
 
-    public function start()
+    public function start(): int
     {
         $this->port = $this->findFreePort();
-        // Build the command
+
         $command = \sprintf(
             'php -S %s:%d -t %s >/dev/null 2>&1 & echo $!',
             $this->host,
@@ -42,8 +48,7 @@ class WebServer
         $start     = \microtime(true);
         $connected = false;
 
-        // Try to connect until the time spent exceeds the timeout specified in the configuration
-        while (\microtime(true) - $start <= 5) {
+        while (\microtime(true) - $start <= self::SERVER_TIMEOUT_SECONDS) {
             if ($this->canConnect()) {
                 $connected = true;
                 break;
@@ -58,25 +63,36 @@ class WebServer
         return $this->port;
     }
 
-    public function end()
+    public function end(): void
     {
         \exec('kill ' . (int)$this->pid);
     }
 
-    private function canConnect()
+    public function getUrl($path = '', bool $https = false): string
     {
-        // Disable error handler for now
-        \set_error_handler(function () {
-            return true;
-        });
-        // Try to open a connection
-        $sp = \fsockopen($this->host, $this->port);
-        // Restore the handler
-        \restore_error_handler();
+        $scheme = $https ? 'https' : 'http';
+
+        $url = "$scheme://$this->host:$this->port";
+
+        if (!empty($path)) {
+            $url .= "/$path";
+        }
+
+        return $url;
+    }
+
+    private function canConnect(): bool
+    {
+        try {
+            $sp = \fsockopen($this->host, $this->port);
+            \fclose($sp);
+        } catch (\Throwable $e) {
+            $sp = false;
+        }
+
         if ($sp === false) {
             return false;
         }
-        \fclose($sp);
 
         return true;
     }
