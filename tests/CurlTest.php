@@ -10,6 +10,22 @@ use PHPUnit\Framework\TestCase;
 
 class CurlTest extends TestCase
 {
+    /** @var WebServer */
+    private $server;
+
+    public function __construct()
+    {
+        $this->server = new WebServer('localhost', __DIR__ . '/fixtures/server');
+        $this->server->start();
+
+        parent::__construct();
+    }
+
+    public function __destruct()
+    {
+        $this->server->stop();
+    }
+
     public function testCantSetCurlOptHeader()
     {
         $this->expectException(InvalidArgumentException::class);
@@ -45,38 +61,27 @@ class CurlTest extends TestCase
 
     public function testPost()
     {
-        $server = new WebServer('localhost', __DIR__ . '/fixtures/server');
-        $server->start();
-
-        $curl = new Curl($server->getUrl('post.php'));
+        $curl = new Curl($this->server->getUrl('post.php'));
 
         $response = $curl->post(['foo' => 'bar']);
 
         $this->assertSame('true', $response->getBody());
-
-        $server->end();
     }
 
     public function testGet()
     {
-        $server = new WebServer('localhost', __DIR__ . '/fixtures/server');
-        $server->start();
-
-        $curl = new Curl($server->getUrl('get.php'));
+        $curl = new Curl($this->server->getUrl('get.php'));
 
         $response = $curl->getResponse();
 
         $this->assertSame('foo', $response->getBody());
-
-        $server->end();
     }
 
     public function testCannotExecuteMoreThanOnce()
     {
         $this->expectException(BadMethodCallException::class);
-        $server = new WebServer('localhost', __DIR__ . '/fixtures/server');
 
-        $curl = new Curl($server->getUrl());
+        $curl = new Curl($this->server->getUrl());
 
         $curl->execute();
         $curl->execute();

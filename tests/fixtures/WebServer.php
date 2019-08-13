@@ -56,14 +56,14 @@ class WebServer
         }
 
         if (!$connected) {
-            $this->end();
+            $this->stop();
             throw new \RuntimeException('Timed out');
         }
 
         return $this->port;
     }
 
-    public function end(): void
+    public function stop(): void
     {
         \exec('kill ' . (int)$this->pid);
     }
@@ -83,16 +83,13 @@ class WebServer
 
     private function canConnect(): bool
     {
-        try {
-            $sp = \fsockopen($this->host, $this->port);
-            \fclose($sp);
-        } catch (\Throwable $e) {
-            $sp = false;
-        }
+        $handle = @\fsockopen($this->host, $this->port);
 
-        if ($sp === false) {
+        if ($handle === false) {
             return false;
         }
+
+        \fclose($handle);
 
         return true;
     }
