@@ -55,7 +55,7 @@ class Curl
 
     public function execute(): Response
     {
-        if ($this->response instanceof Response) {
+        if ($this->response) {
             throw new BadMethodCallException('Request has already been executed');
         }
 
