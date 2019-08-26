@@ -16,7 +16,7 @@
     },
     "require-dev": {
         "palmtree/php-cs-fixer-config": "^1.0",
-        "phpunit/phpunit": "^8.1",
+        "phpunit/phpunit": "^8.1|^7.5",
         "ext-sockets": "*"
     },
     "autoload": {

@@ -19,7 +19,7 @@ cache:
     - $HOME/.composer/cache/files
 
 before_script:
-  - composer install --no-interaction --prefer-dist --quiet
+  - composer install --no-interaction --prefer-dist
 
 script:
   - if [[ "$PHPLINT" == "1" ]]; then find -L .  -path ./vendor -prune -o -name '*.php' -print0 | xargs -0 -n 1 -P 4 php -l; fi
