@@ -11,11 +11,10 @@ class Response
     /** @var int */
     private $statusCode;
 
-    public function __construct($response = '', $statusCode = 0)
+    public function __construct(string $response = '', int $statusCode = 0)
     {
-        $this
-            ->parse($response)
-            ->setStatusCode($statusCode);
+        $this->parse($response);
+        $this->statusCode = $statusCode;
     }
 
     public function getHeaders(): array
@@ -23,7 +22,7 @@ class Response
         return $this->headers;
     }
 
-    public function getHeader(string $key): string
+    public function getHeader(string $key): ?string
     {
         return $this->headers[$key] ?? null;
     }
@@ -40,22 +39,20 @@ class Response
 
     public function isOk(): bool
     {
-        return $this->getStatusCode() >= Curl::HTTP_OK_MIN && $this->getStatusCode() <= Curl::HTTP_OK_MAX;
+        return $this->statusCode >= Curl::HTTP_OK_MIN && $this->statusCode <= Curl::HTTP_OK_MAX;
     }
 
     public function is404(): bool
     {
-        return $this->getStatusCode() === Curl::HTTP_NOT_FOUND;
+        return $this->statusCode === Curl::HTTP_NOT_FOUND;
     }
 
-    public function setStatusCode(int $statusCode): self
+    public function __toString(): string
     {
-        $this->statusCode = $statusCode;
-
-        return $this;
+        return $this->body;
     }
 
-    public function parse(string $response): self
+    private function parse(string $response)
     {
         $response = \explode("\r\n\r\n", $response);
 
@@ -77,16 +74,5 @@ class Response
         }
 
         $this->body = $body;
-
-        return $this;
-    }
-
-    public function __toString(): string
-    {
-        $body = $this->getBody();
-
-        $body = $body ?: '';
-
-        return $body;
     }
 }
