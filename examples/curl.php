@@ -5,15 +5,12 @@ require_once __DIR__ . '/../vendor/autoload.php';
 use Palmtree\Curl\Curl;
 
 // Long form
-$curl = new Curl([
-    'url'       => 'http://example.org',
-    'curl_opts' => [
-        CURLOPT_FOLLOWLOCATION => true,
-    ],
+$curl = new Curl('https://example.org', [
+    CURLOPT_FOLLOWLOCATION => true,
 ]);
 
 // Short form
-// $curl = new Curl('http://example.org')
+// $curl = new Curl('https://example.org')
 
 $curl->getRequest()->addHeader('Host', 'example.org');
 
