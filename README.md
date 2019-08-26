@@ -5,7 +5,7 @@
 A curl class to make http requests a bit easier.
 
 ## Requirements
-* PHP >= 5.6
+* PHP >= 7.1
 
 ## Installation
 
@@ -23,7 +23,7 @@ You can use the static `getContents` method if you just want to retrieve a respo
 <?php
 use Palmtree\Curl\Curl;
 
-$contents = Curl::getContents('http://example.org'); 
+$contents = Curl::getContents('https://example.org'); 
 ```
 
 If you want access to the response headers and body, create a new instance instead:
@@ -32,7 +32,7 @@ If you want access to the response headers and body, create a new instance inste
 <?php
 use Palmtree\Curl\Curl;
 
-$curl = new Curl('http://example.org');
+$curl = new Curl('https://example.org');
 
 // Returns the response body when used as a string
 echo $curl;
@@ -52,11 +52,8 @@ $body = $response->getBody();
 <?php
 use Palmtree\Curl\Curl;
 
-$curl = new Curl([
-    'url' => 'http://example.org',
-    'curl_opts' => [
-        CURLOPT_FOLLOWLOCATION => true,  
-    ],
+$curl = new Curl('https://example.org', [
+    CURLOPT_FOLLOWLOCATION => true,
 ]);
 
 $curl->getRequest()->addHeader('Host', 'example.org');
