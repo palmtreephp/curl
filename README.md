@@ -1,11 +1,11 @@
-# Palmtree Curl
+# :palm_tree: Palmtree Curl
 
 [![License](http://img.shields.io/packagist/l/palmtree/curl.svg)](LICENSE)
 [![Travis](https://img.shields.io/travis/palmtreephp/curl.svg)](https://travis-ci.org/palmtreephp/curl)
 [![Scrutinizer](https://img.shields.io/scrutinizer/g/palmtreephp/curl.svg)](https://scrutinizer-ci.com/g/palmtreephp/curl/)
 [![Code Coverage](https://scrutinizer-ci.com/g/palmtreephp/curl/badges/coverage.png)](https://scrutinizer-ci.com/g/palmtreephp/curl/)
 
-A curl class to make http requests a bit easier.
+A PHP cURL wrapper to make HTTP requests easier.
 
 ## Requirements
 * PHP >= 7.1
