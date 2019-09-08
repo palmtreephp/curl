@@ -31,8 +31,7 @@ class Curl
 
     public function __construct(string $url, array $curlOpts = [])
     {
-        $this->setUrl($url);
-
+        $this->url     = $url;
         $this->handle  = \curl_init($url);
         $this->request = new Request();
 
