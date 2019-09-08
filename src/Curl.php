@@ -55,12 +55,8 @@ class Curl
         return $this->execute();
     }
 
-    public function postJson($json): Response
+    public function postJson(string $json): Response
     {
-        if (!\is_string($json)) {
-            $json = \json_encode($json);
-        }
-
         $this->getRequest()->addHeader('Content-Type', 'application/json');
         $this->getRequest()->addHeader('Content-Length', \strlen($json));
 

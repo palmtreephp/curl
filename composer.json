@@ -19,9 +19,6 @@
         "phpunit/phpunit": "^8.1|^7.5",
         "ext-sockets": "*"
     },
-    "suggest": {
-        "ext-json": "Needed for postJson to work"
-    },
     "autoload": {
         "psr-4": {
             "Palmtree\\Curl\\": "src"
