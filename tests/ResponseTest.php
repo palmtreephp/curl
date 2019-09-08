@@ -63,6 +63,37 @@ class ResponseTest extends TestCase
         $this->assertSame('Hello, World!', $response->getBody());
     }
 
+    public function testGetHeaders()
+    {
+        $headers = [
+            'Date'          => 'Tue, 07 May 2019 11:30:00 GMT',
+            'Expires'       => '-1',
+            'Cache-Control' => 'private, max-age=0',
+            'Content-Type'  => 'text/html; charset=utf-8',
+            'Vary'          => 'Accept-Encoding',
+        ];
+
+        $rawResponse = 'HTTP/1.1 200 OK' . "\r\n";
+
+        foreach ($headers as $key => $value) {
+            $rawResponse .= "$key: $value\r\n";
+        }
+
+        $rawResponse .= "\r\nHello, World!";
+
+        $response = new Response($rawResponse, 200);
+
+        $this->assertIsArray($response->getHeaders());
+        $this->assertSame($headers, $response->getHeaders());
+    }
+
+    public function testGetStatusCode()
+    {
+        $response = new Response('', 200);
+
+        $this->assertSame(200, $response->getStatusCode());
+    }
+
     public function testIsOk()
     {
         $response = new Response('', 200);

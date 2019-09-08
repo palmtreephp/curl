@@ -66,6 +66,16 @@ class CurlTest extends TestCase
         $this->assertSame($opts[CURLOPT_USERAGENT], 'Palmtree\Curl\Tests');
     }
 
+    public function testCurlSetOpt()
+    {
+        $curl = new Curl('https://example.org');
+
+        $curl->setOpt(CURLOPT_USERAGENT, 'Palmtree\Curl\Tests');
+
+        $this->assertArrayHasKey(CURLOPT_USERAGENT, $curl->getOpts());
+        $this->assertSame($curl->getOpts()[CURLOPT_USERAGENT], 'Palmtree\Curl\Tests');
+    }
+
     public function testPost()
     {
         $curl = new Curl($this->server->getUrl('post.php'));
@@ -101,5 +111,19 @@ class CurlTest extends TestCase
 
         $curl->execute();
         $curl->execute();
+    }
+
+    public function testCurlGetContents()
+    {
+        $contents = Curl::getContents($this->server->getUrl('get.php'));
+
+        $this->assertSame('foo', $contents);
+    }
+
+    public function testToString()
+    {
+        $curl = new Curl($this->server->getUrl('get.php'));
+
+        $this->assertSame('foo', (string)$curl);
     }
 }
