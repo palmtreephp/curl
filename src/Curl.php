@@ -46,16 +46,31 @@ class Curl
         return $curl->getResponse()->getBody();
     }
 
-    public function post(array $data): Response
+    /**
+     * @param string|array $data
+     */
+    public function post($data): Response
     {
         $this->getRequest()->setBody($data);
 
         return $this->execute();
     }
 
+    public function postJson($json): Response
+    {
+        if (!\is_string($json)) {
+            $json = \json_encode($json);
+        }
+
+        $this->getRequest()->addHeader('Content-Type', 'application/json');
+        $this->getRequest()->addHeader('Content-Length', \strlen($json));
+
+        return $this->post($json);
+    }
+
     public function execute(): Response
     {
-        if ($this->response) {
+        if ($this->response !== null) {
             throw new BadMethodCallException('Request has already been executed');
         }
 
@@ -122,11 +137,7 @@ class Curl
 
     public function __toString(): string
     {
-        $body = $this->getResponse()->getBody();
-
-        $body = $body ?: '';
-
-        return $body;
+        return $this->getResponse()->getBody() ?: '';
     }
 
     private function buildCurlOpts(array $curlOpts)

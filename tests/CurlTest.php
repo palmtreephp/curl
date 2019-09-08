@@ -26,6 +26,13 @@ class CurlTest extends TestCase
         $this->server->stop();
     }
 
+    public function testGetUrl()
+    {
+        $curl = new Curl('https://example.org');
+
+        $this->assertSame('https://example.org', $curl->getUrl());
+    }
+
     public function testCantSetCurlOptHeader()
     {
         $this->expectException(InvalidArgumentException::class);
@@ -64,6 +71,15 @@ class CurlTest extends TestCase
         $curl = new Curl($this->server->getUrl('post.php'));
 
         $response = $curl->post(['foo' => 'bar']);
+
+        $this->assertSame('true', $response->getBody());
+    }
+
+    public function testPostJson()
+    {
+        $curl = new Curl($this->server->getUrl('json.php'));
+
+        $response = $curl->postJson(\json_encode(['foo' => true]));
 
         $this->assertSame('true', $response->getBody());
     }
