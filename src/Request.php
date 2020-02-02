@@ -6,7 +6,7 @@ class Request
 {
     /** @var array */
     private $headers = [];
-    /** @var array|string */
+    /** @var string|array */
     private $body;
 
     public function addHeader(string $key, string $value): self
@@ -35,7 +35,7 @@ class Request
     public function getHeaderStrings(): array
     {
         $headers = [];
-        foreach ($this->getHeaders() as $key => $value) {
+        foreach ($this->headers as $key => $value) {
             $headers[] = "$key: $value";
         }
 
@@ -53,7 +53,7 @@ class Request
     }
 
     /**
-     * @return array|string
+     * @return string|array
      */
     public function getBody()
     {
