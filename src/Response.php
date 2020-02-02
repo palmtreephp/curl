@@ -4,6 +4,10 @@ namespace Palmtree\Curl;
 
 class Response
 {
+    public const HTTP_NOT_FOUND = 404;
+    public const HTTP_OK_MIN    = 200;
+    public const HTTP_OK_MAX    = 299;
+
     /** @var array */
     private $headers = [];
     /** @var string */
@@ -39,12 +43,12 @@ class Response
 
     public function isOk(): bool
     {
-        return $this->statusCode >= Curl::HTTP_OK_MIN && $this->statusCode <= Curl::HTTP_OK_MAX;
+        return $this->statusCode >= self::HTTP_OK_MIN && $this->statusCode <= self::HTTP_OK_MAX;
     }
 
     public function is404(): bool
     {
-        return $this->statusCode === Curl::HTTP_NOT_FOUND;
+        return $this->statusCode === self::HTTP_NOT_FOUND;
     }
 
     public function __toString(): string

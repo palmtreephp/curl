@@ -3,17 +3,10 @@
 namespace Palmtree\Curl;
 
 use Palmtree\Curl\Exception\BadMethodCallException;
-use Palmtree\Curl\Exception\InvalidArgumentException;
+use Palmtree\Curl\Exception\CurlErrorException;
 
 class Curl
 {
-    public static $defaultCurlOpts = [
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_FOLLOWLOCATION => true,
-        CURLOPT_AUTOREFERER    => true,
-        CURLOPT_USERAGENT      => 'Palmtree\Curl',
-    ];
-
     /** @var string */
     private $url;
     /** @var resource */
@@ -22,12 +15,8 @@ class Curl
     private $request;
     /** @var Response */
     private $response;
-    /** @var array */
+    /** @var CurlOpts */
     private $curlOpts = [];
-
-    const HTTP_NOT_FOUND = 404;
-    const HTTP_OK_MIN    = 200;
-    const HTTP_OK_MAX    = 299;
 
     public function __construct(string $url, array $curlOpts = [])
     {
@@ -35,9 +24,10 @@ class Curl
         $this->handle  = \curl_init($url);
         $this->request = new Request();
 
-        $this->buildCurlOpts($curlOpts);
+        $this->curlOpts = new CurlOpts($curlOpts);
     }
 
+    /** @throws CurlErrorException */
     public static function getContents(string $url, array $curlOpts = []): string
     {
         $curl = new self($url, $curlOpts);
@@ -47,6 +37,8 @@ class Curl
 
     /**
      * @param string|array $data
+     *
+     * @throws CurlErrorException
      */
     public function post($data): Response
     {
@@ -55,6 +47,7 @@ class Curl
         return $this->execute();
     }
 
+    /** @throws CurlErrorException */
     public function postJson(string $json): Response
     {
         $this->getRequest()->addHeader('Content-Type', 'application/json');
@@ -63,11 +56,14 @@ class Curl
         return $this->post($json);
     }
 
+    /** @throws CurlErrorException */
     public function execute(): Response
     {
         if ($this->response !== null) {
-            throw new BadMethodCallException('Request has already been executed');
+            throw new BadMethodCallException('Request already executed');
         }
+
+        \curl_setopt_array($this->handle, $this->curlOpts->toArray());
 
         if ($headers = $this->getRequest()->getHeaderStrings()) {
             \curl_setopt($this->handle, CURLOPT_HTTPHEADER, $headers);
@@ -78,10 +74,13 @@ class Curl
             \curl_setopt($this->handle, CURLOPT_POSTFIELDS, $body);
         }
 
-        $response   = \curl_exec($this->handle);
-        $statusCode = \curl_getinfo($this->handle, CURLINFO_HTTP_CODE);
+        $response = \curl_exec($this->handle);
 
-        $this->response = new Response($response, $statusCode);
+        if ($errorNumber = \curl_errno($this->handle)) {
+            throw new CurlErrorException(\curl_error($this->handle), $errorNumber);
+        }
+
+        $this->response = new Response($response, \curl_getinfo($this->handle, CURLINFO_HTTP_CODE));
 
         return $this->response;
     }
@@ -91,6 +90,9 @@ class Curl
         return $this->request;
     }
 
+    /**
+     * @throws CurlErrorException
+     */
     public function getResponse(): Response
     {
         if ($this->response === null) {
@@ -105,36 +107,17 @@ class Curl
         return $this->url;
     }
 
-    public function getOpts(): array
+    public function getCurlOpts(): CurlOpts
     {
         return $this->curlOpts;
     }
 
-    public function setOpt(int $key, $value): self
-    {
-        if ($key === CURLOPT_HEADER && !$value) {
-            throw new InvalidArgumentException('CURLOPT_HEADER cannot be set to false');
-        }
-
-        $this->curlOpts[$key] = $value;
-
-        \curl_setopt($this->handle, $key, $value);
-
-        return $this;
-    }
-
     public function __toString(): string
     {
-        return $this->getResponse()->getBody() ?: '';
-    }
-
-    private function buildCurlOpts(array $curlOpts)
-    {
-        $this->curlOpts = \array_replace(self::$defaultCurlOpts, $curlOpts);
-
-        // The Response class always parses headers.
-        $this->curlOpts[CURLOPT_HEADER] = true;
-
-        \curl_setopt_array($this->handle, $this->curlOpts);
+        try {
+            return $this->getResponse()->getBody();
+        } catch (CurlErrorException $e) {
+            return '';
+        }
     }
 }
