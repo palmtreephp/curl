@@ -61,7 +61,10 @@ $curl = new Curl('https://example.org', [
 
 $curl->getRequest()->addHeader('Host', 'example.org');
 
-$response = $curl->execute();
+try {
+    $response = $curl->execute();
+} catch(CurlErrorException $e) {
+}
 
 $headers = $response->getHeaders();
 $body = $response->getBody();
