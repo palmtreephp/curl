@@ -2,13 +2,7 @@
 
 namespace Palmtree\Curl\Tests;
 
-use Palmtree\Curl\Curl;
-use Palmtree\Curl\CurlError;
 use Palmtree\Curl\CurlOpts;
-use Palmtree\Curl\Exception\BadMethodCallException;
-use Palmtree\Curl\Exception\CurlErrorException;
-use Palmtree\Curl\Exception\InvalidArgumentException;
-use Palmtree\Curl\Tests\Fixtures\WebServer;
 use PHPUnit\Framework\TestCase;
 
 class CurlOptsTest extends TestCase
