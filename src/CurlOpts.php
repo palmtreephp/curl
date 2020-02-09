@@ -40,6 +40,11 @@ class CurlOpts implements \ArrayAccess, \IteratorAggregate
         return $this;
     }
 
+    public function get(int $key)
+    {
+        return $this->opts[$key] ?? null;
+    }
+
     public function offsetExists($offset)
     {
         return isset($this->opts[$offset]);
@@ -47,7 +52,7 @@ class CurlOpts implements \ArrayAccess, \IteratorAggregate
 
     public function offsetGet($offset)
     {
-        return $this->opts[$offset];
+        return $this->get($offset);
     }
 
     public function offsetSet($offset, $value)
