@@ -96,6 +96,15 @@ class CurlTest extends TestCase
         $this->assertSame('true', $response->getBody());
     }
 
+    public function testPostArrayAsJson()
+    {
+        $curl = new Curl($this->server->getUrl('json.php'));
+
+        $response = $curl->postJson(['foo' => true]);
+
+        $this->assertSame('true', $response->getBody());
+    }
+
     public function testGet()
     {
         $curl = new Curl($this->server->getUrl('get.php'));
@@ -139,5 +148,12 @@ class CurlTest extends TestCase
         } catch (CurlErrorException $exception) {
             $this->assertSame(CurlError::UNSUPPORTED_PROTOCOL, $exception->getCode());
         }
+    }
+
+    public function testCurlExceptionInToString()
+    {
+        $curl = new Curl('foo://bar');
+
+        $this->assertSame('', (string)$curl);
     }
 }
